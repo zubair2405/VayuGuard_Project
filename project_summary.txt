@@ -1,0 +1,40 @@
+VayuGuard Project - Phase 1 Summary
+
+Role: Data Analyst
+
+Completed Work:
+1. Created project folder structure.
+2. Collected weather data using Open-Meteo API.
+3. Collected air quality data using Open-Meteo Air Quality API.
+4. Stored raw data in CSV files.
+5. Checked data shape, columns, data types, and missing values.
+6. Removed rows with missing pollution values.
+7. Merged hourly weather data with air quality data.
+8. Created final_dataset.csv with 85 rows and 9 columns.
+9. Performed EDA to identify highest PM2.5, PM10, and CO values.
+10. Performed correlation analysis.
+11. Created visualizations for PM2.5 trend, PM10 trend, Temperature vs PM2.5, and Wind Speed vs PM2.5.
+
+Key Insights:
+1. PM2.5 and PM10 have a strong positive correlation of 0.918.
+2. Wind speed has a negative correlation with PM2.5, meaning higher wind speed may reduce pollution concentration.
+3. Temperature has very little direct relation with PM2.5 in the current dataset.
+4. Temperature and O3 show a strong positive correlation.
+5. Highest PM2.5 was recorded on 2026-06-11 at 16:00.
+
+Files Created:
+- weather.csv
+- weather_hourly.csv
+- air_quality.csv
+- air_quality_clean.csv
+- final_dataset.csv
+- fetch_pollution.py
+- fetch_weather_hourly.py
+- clean_air_quality.py
+- merge_data.py
+- eda_analysis.py
+- correlation_analysis.py
+- dashboard.py
+
+Next Phase:
+The next phase is to create a Power BI dashboard or export charts/images for project submission.
