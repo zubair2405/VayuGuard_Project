@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>VayuGuard Dashboard</title>
+
+        <link rel="stylesheet" href="style.css">
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    </head>
+
+    <body>
+
+        <section class="hero">
+            <h1>🌍 VayuGuard</h1>
+            <p>Air Quality Monitoring & Analytics Dashboard</p>
+        </section>
+
+        <div class="search-box">
+            <input type="text" id="cityInput" placeholder="Enter city name">
+            <input type="text" id="countryInput" placeholder="Enter country name">
+            <button onclick="searchLocation()">Search</button>
+        </div>
+
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <h3>PM2.5</h3>
+                <p id="pm25">Loading...</p>
+                <span>Fine particles</span>
+            </div>
+
+            <div class="kpi-card">
+                <h3>PM10</h3>
+                <p id="pm10">Loading...</p>
+                <span>Dust particles</span>
+            </div>
+
+            <div class="kpi-card">
+                <h3>CO</h3>
+                <p id="co">Loading...</p>
+                <span>Carbon monoxide</span>
+            </div>
+
+            <div class="kpi-card">
+                <h3>Alerts</h3>
+                <p id="alertCount">Loading...</p>
+                <span>High pollution hours</span>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="card">
+                <h2>🗺️ Location Map</h2>
+                <div id="map"></div>
+            </div>
+
+            <div class="card">
+                <h2>📊 PM2.5 Daily Trend</h2>
+                <canvas id="pm25Chart"></canvas>
+            </div>
+
+            <div class="card">
+                <h2>📊 PM10 Daily Trend</h2>
+                <canvas id="pm10Chart"></canvas>
+            </div>
+
+            <div class="card">
+                <h2>📊 CO Daily Trend</h2>
+                <canvas id="coChart"></canvas>
+            </div>
+
+            <div class="card">
+                <h2>📈 Daily Pollution Summary</h2>
+                <div id="daily-summary">Loading daily data...</div>
+            </div>
+
+        </div>
+
+        <div class="card">
+            <h2>🚨 High Pollution Alerts</h2>
+            <div id="alerts">Loading alerts...</div>
+        </div>
+
+        <footer>
+            <p>Powered by PostgreSQL | Flask | Chart.js</p>
+        </footer>
+
+        <script src="script.js"></script>
+
+    </body>
+
+</html>

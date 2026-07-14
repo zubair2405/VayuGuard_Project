@@ -1,0 +1,177 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #064e3b);
+    color: white;
+}
+
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 20px;
+    color: #d1fae5;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 25px;
+    margin: 20px auto;
+    width: 80%;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.alert-item {
+    background: rgba(239, 68, 68, 0.18);
+    border-left: 5px solid #ef4444;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+}
+
+.daily-item {
+    background: rgba(59, 130, 246, 0.18);
+    border-left: 5px solid #3b82f6;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+}
+
+fetch("http://127.0.0.1:5000/daily-summary") .then(response=> response.json()) .then(data=> {
+        const days=data.map(item=> item.day);
+        const coValues=data.map(item=> item.avg_co);
+
+        const ctx=document.getElementById("coChart");
+
+        new Chart(ctx, {
+
+            type: "line",
+            data: {
+
+                labels: days,
+                datasets: [ {
+                    label: "Average CO",
+                    data: coValues,
+                    borderWidth: 3,
+                    tension: 0.4
+                }
+
+                ]
+            }
+        });
+});
+
+.kpi-container {
+    width: 85%;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.kpi-card {
+    background: rgba(255, 255, 255, 0.14);
+    padding: 25px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.kpi-card h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #d1fae5;
+}
+
+.kpi-card p {
+    font-size: 34px;
+    font-weight: bold;
+    margin: 12px 0;
+}
+
+.kpi-card span {
+    font-size: 14px;
+    color: #cbd5e1;
+}
+
+.chart-container {
+    width: 85%;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.chart-container .card {
+    width: auto;
+    margin: 0;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #cbd5e1;
+    margin-top: 30px;
+}
+
+.kpi-card:hover,
+.card:hover {
+    transform: translateY(-5px);
+    transition: 0.3s;
+}
+
+.card {
+    transition: 0.3s;
+}
+
+@media (max-width: 768px) {
+
+    .kpi-container,
+    .chart-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.search-box {
+    width: 85%;
+    margin: 20px auto;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.search-box input {
+    padding: 14px;
+    width: 220px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+}
+
+.search-box button {
+    padding: 14px 25px;
+    border: none;
+    border-radius: 10px;
+    background: #22c55e;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.search-box button:hover {
+    background: #16a34a;
+}
+
+#map {
+    height: 450px;
+    width: 100%;
+    border-radius: 12px;
+}
