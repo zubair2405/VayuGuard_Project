@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: vayuguard
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python backend/init_db.py && gunicorn --chdir backend app:app
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: vayuguard-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: vayuguard-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: vayuguard-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: vayuguard-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: vayuguard-db
+          property: password
+databases:
+  - name: vayuguard-db
+    plan: free

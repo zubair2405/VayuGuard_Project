@@ -1,96 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#071b2d">
+    <title>VayuGuard | Air Quality Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="page-glow glow-one"></div>
+    <div class="page-glow glow-two"></div>
 
-    <head>
-        <title>VayuGuard Dashboard</title>
+    <main>
+        <nav class="topbar">
+            <a class="brand" href="#top" aria-label="VayuGuard home">
+                <span class="brand-mark"><span></span><span></span><span></span></span>
+                <span>Vayu<span>Guard</span></span>
+            </a>
+            <div class="live-indicator"><i></i> Monitoring live data</div>
+        </nav>
 
-        <link rel="stylesheet" href="style.css">
-
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    </head>
-
-    <body>
-
-        <section class="hero">
-            <h1>🌍 VayuGuard</h1>
-            <p>Air Quality Monitoring & Analytics Dashboard</p>
+        <section class="hero" id="top">
+            <div class="hero-copy">
+                <p class="eyebrow">ENVIRONMENTAL INTELLIGENCE</p>
+                <h1>See the air.<br><em>Protect</em> what matters.</h1>
+                <p class="hero-text">A clear view of the air around you, with real-time pollution data and meaningful local insights.</p>
+                <form class="search-box" onsubmit="searchLocation(); return false;">
+                    <div class="input-wrap"><span>⌖</span><input type="text" id="cityInput" placeholder="City" aria-label="City name"></div>
+                    <div class="input-wrap"><span>◉</span><input type="text" id="countryInput" placeholder="Country" aria-label="Country name"></div>
+                    <button type="submit">Explore air <span>→</span></button>
+                </form>
+                <div class="aqi-readout" id="aqiReadout" aria-live="polite">
+                    <div class="aqi-gauge"><span></span></div>
+                    <div><small>LIVE AIR QUALITY INDEX</small><strong id="aqiValue">—</strong><p id="aqiStatus">Search for a town to view its AQI</p></div>
+                </div>
+            </div>
+            <div class="air-orb" aria-hidden="true">
+                <div class="orb-ring ring-1"></div><div class="orb-ring ring-2"></div><div class="orb-ring ring-3"></div>
+                <div class="orb-core"><span>Air</span><strong>01</strong><small>live layer</small></div>
+                <span class="float-dot dot-1"></span><span class="float-dot dot-2"></span><span class="float-dot dot-3"></span>
+            </div>
         </section>
 
-        <div class="search-box">
-            <input type="text" id="cityInput" placeholder="Enter city name">
-            <input type="text" id="countryInput" placeholder="Enter country name">
-            <button onclick="searchLocation()">Search</button>
-        </div>
-
-        <div class="kpi-container">
-            <div class="kpi-card">
-                <h3>PM2.5</h3>
-                <p id="pm25">Loading...</p>
-                <span>Fine particles</span>
+        <section class="metrics-section" aria-labelledby="metrics-title">
+            <div class="section-heading"><div><p class="eyebrow">AT A GLANCE</p><h2 id="metrics-title">Air quality metrics</h2></div><p class="updated">Updated from the latest available reading</p></div>
+            <div class="kpi-container">
+                <article class="kpi-card teal"><div class="metric-icon">≋</div><div><h3>PM2.5</h3><p id="pm25">Loading...</p><span>Fine particles</span></div></article>
+                <article class="kpi-card amber"><div class="metric-icon">✦</div><div><h3>PM10</h3><p id="pm10">Loading...</p><span>Dust particles</span></div></article>
+                <article class="kpi-card violet"><div class="metric-icon">◌</div><div><h3>CO</h3><p id="co">Loading...</p><span>Carbon monoxide</span></div></article>
+                <article class="kpi-card coral"><div class="metric-icon">!</div><div><h3>Alerts</h3><p id="alertCount">Loading...</p><span>High pollution hours</span></div></article>
             </div>
+        </section>
 
-            <div class="kpi-card">
-                <h3>PM10</h3>
-                <p id="pm10">Loading...</p>
-                <span>Dust particles</span>
+        <section class="weather-section" id="weatherSection" aria-labelledby="weather-title" hidden>
+            <div class="section-heading"><div><p class="eyebrow">LIVE LOCAL VIEW</p><h2 id="weather-title">Local conditions &amp; forecast</h2></div><p class="updated" id="weatherLocation">Choose a town to see local conditions</p></div>
+            <div class="weather-layout">
+                <article class="weather-now">
+                    <div><p class="weather-label">CURRENT WEATHER</p><div class="weather-temp"><strong id="weatherTemp">—</strong><span>°C</span></div><p id="weatherDescription">Waiting for a location</p></div>
+                    <div class="weather-stats"><span>Wind <b id="weatherWind">—</b></span><span>Observed <b id="weatherTime">—</b></span></div>
+                </article>
+                <article class="forecast-card"><p class="weather-label">5-DAY FORECAST</p><div class="forecast-list" id="forecastList"></div></article>
+                <article class="place-card"><p class="weather-label">LOCATION PROFILE</p><div class="place-details"><span>Coordinates <b id="placeCoords">—</b></span><span>Elevation <b id="placeElevation">—</b></span><span>Timezone <b id="placeTimezone">—</b></span><span>Population <b id="placePopulation">—</b></span></div></article>
             </div>
+        </section>
 
-            <div class="kpi-card">
-                <h3>CO</h3>
-                <p id="co">Loading...</p>
-                <span>Carbon monoxide</span>
-            </div>
+        <section class="dashboard-grid">
+            <article class="card map-card"><div class="card-title"><div><span class="card-icon">⌖</span><h2>Location map</h2></div><span class="card-tag">INTERACTIVE</span></div><div id="map"></div></article>
+            <article class="card chart-card"><div class="card-title"><div><span class="card-icon">⌁</span><h2>PM2.5 trend</h2></div><span class="chart-key cyan"></span></div><p class="chart-subtitle">Fine particles that can enter the bloodstream</p><div class="chart-wrap"><canvas id="pm25Chart"></canvas></div><div class="chart-guide"><span><i class="guide-dot cyan"></i> Daily average</span><span>Lower is cleaner <b>↓</b></span></div></article>
+            <article class="card chart-card"><div class="card-title"><div><span class="card-icon">⌁</span><h2>PM10 trend</h2></div><span class="chart-key gold"></span></div><p class="chart-subtitle">Larger dust, pollen, and airborne particles</p><div class="chart-wrap"><canvas id="pm10Chart"></canvas></div><div class="chart-guide"><span><i class="guide-dot gold"></i> Daily average</span><span>Each bar = one day</span></div></article>
+            <article class="card chart-card"><div class="card-title"><div><span class="card-icon">⌁</span><h2>CO trend</h2></div><span class="chart-key lilac"></span></div><p class="chart-subtitle">Carbon monoxide concentration in the air</p><div class="chart-wrap"><canvas id="coChart"></canvas></div><div class="chart-guide"><span><i class="guide-dot lilac"></i> Daily average</span><span>Hover points for values</span></div></article>
+        </section>
 
-            <div class="kpi-card">
-                <h3>Alerts</h3>
-                <p id="alertCount">Loading...</p>
-                <span>High pollution hours</span>
-            </div>
-        </div>
+        <aside class="graph-explainer" aria-label="How to read the air-quality graphs">
+            <div class="explainer-icon">⌁</div><div><strong>How to read the graphs</strong><p>The horizontal axis shows the day. The vertical axis shows average pollutant concentration in µg/m³. Taller bars or rising lines mean more pollution; use the hover tooltip for the exact reading.</p></div><div class="scale-chips"><span class="chip-good">Lower</span><span class="chip-mid">Watch</span><span class="chip-high">Higher</span></div>
+        </aside>
 
-        <div class="chart-container">
-            <div class="card">
-                <h2>🗺️ Location Map</h2>
-                <div id="map"></div>
-            </div>
-
-            <div class="card">
-                <h2>📊 PM2.5 Daily Trend</h2>
-                <canvas id="pm25Chart"></canvas>
-            </div>
-
-            <div class="card">
-                <h2>📊 PM10 Daily Trend</h2>
-                <canvas id="pm10Chart"></canvas>
-            </div>
-
-            <div class="card">
-                <h2>📊 CO Daily Trend</h2>
-                <canvas id="coChart"></canvas>
-            </div>
-
-            <div class="card">
-                <h2>📈 Daily Pollution Summary</h2>
-                <div id="daily-summary">Loading daily data...</div>
-            </div>
-
-        </div>
-
-        <div class="card">
-            <h2>🚨 High Pollution Alerts</h2>
-            <div id="alerts">Loading alerts...</div>
-        </div>
-
-        <footer>
-            <p>Powered by PostgreSQL | Flask | Chart.js</p>
-        </footer>
-
-        <script src="script.js"></script>
-
-    </body>
-
+        <section class="lower-grid">
+            <article class="card feed-card"><div class="card-title"><div><span class="card-icon">▤</span><h2>Daily pollution summary</h2></div></div><div id="daily-summary">Loading daily data...</div></article>
+            <article class="card alerts-card"><div class="card-title"><div><span class="card-icon">!</span><h2>Air quality advisories</h2></div></div><div id="alerts">Loading alerts...</div></article>
+        </section>
+    </main>
+    <footer><span class="brand-mark small"><span></span><span></span><span></span></span> VayuGuard <b>·</b> Air quality, made visible</footer>
+    <script src="script.js"></script>
+</body>
 </html>
