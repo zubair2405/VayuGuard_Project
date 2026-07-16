@@ -1,96 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VayuGuard — live air quality and weather intelligence.">
+    <title>VayuGuard | Air & Weather Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .location-button{background:transparent;border:0;color:#087e81;cursor:pointer;font:700 11px Manrope;padding:10px 3px 0}.location-button:hover{text-decoration:underline}.hourly-panel{display:grid;grid-template-columns:.8fr 1.2fr;gap:24px;align-items:center;padding:23px 26px;margin-top:15px}.hourly-panel h3{margin:0 0 7px;font-size:18px}.hourly-panel p:last-child{margin:0;color:#6b7b91;font-size:12px}.hourly-outlook{display:flex;gap:6px;overflow-x:auto}.hour-card{border-left:1px solid #dfe8ee;flex:0 0 69px;padding:2px 7px;text-align:center}.hour-card:first-child{border:0}.hour-card time,.hour-card small{display:block;color:#6b7b91;font:500 9px 'DM Mono',monospace}.hour-card div{font-size:19px;margin:7px 0}.hour-card b{font-size:12px}@media(max-width:780px){.hourly-panel{grid-template-columns:1fr}}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div class="sky-glow"></div><div class="mountain mountain-back"></div><div class="mountain mountain-front"></div>
+    <header class="site-header">
+        <a class="brand" href="#top"><span class="brand-mark">V</span>Vayu<span>Guard</span></a>
+        <nav><a href="#air-quality">Air quality</a><a href="#forecast">Forecast</a><a href="#advice">Guidance</a></nav>
+        <div class="live-pill"><i></i> LIVE ENVIRONMENT DATA</div>
+    </header>
 
-    <head>
-        <title>VayuGuard Dashboard</title>
-
-        <link rel="stylesheet" href="style.css">
-
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    </head>
-
-    <body>
-
+    <main id="top">
         <section class="hero">
-            <h1>🌍 VayuGuard</h1>
-            <p>Air Quality Monitoring & Analytics Dashboard</p>
+            <div class="hero-copy">
+                <p class="eyebrow">Breathe with confidence</p>
+                <h1>Know the air.<br><em>Plan the day.</em></h1>
+                <p class="hero-description">Live air-quality intelligence and a clear weather outlook, designed to help you make healthier daily decisions.</p>
+                <form class="search-panel" id="locationForm">
+                    <label><span>City</span><input id="cityInput" value="Bengaluru" aria-label="City" required></label>
+                    <label><span>Country</span><input id="countryInput" value="India" aria-label="Country" required></label>
+                    <button type="submit">Explore <span>→</span></button>
+                </form>
+                <button class="location-button" id="myLocation" type="button">⌖ Use my current location</button>
+                <p class="location-status" id="locationStatus">Loading local conditions…</p>
+            </div>
+            <aside class="hero-reading glass-card">
+                <div class="reading-top"><span>Current air quality</span><span id="updatedAt">—</span></div>
+                <div class="aqi-orb" id="aqiOrb"><strong id="aqiValue">—</strong><small>AQI</small></div>
+                <h2 id="aqiLabel">Finding your air quality</h2>
+                <p id="locationName">Select a location to begin.</p>
+                <div class="reading-meta"><span>PM2.5 <b id="heroPm25">—</b></span><span>Wind <b id="heroWind">—</b></span></div>
+            </aside>
         </section>
 
-        <div class="search-box">
-            <input type="text" id="cityInput" placeholder="Enter city name">
-            <input type="text" id="countryInput" placeholder="Enter country name">
-            <button onclick="searchLocation()">Search</button>
-        </div>
-
-        <div class="kpi-container">
-            <div class="kpi-card">
-                <h3>PM2.5</h3>
-                <p id="pm25">Loading...</p>
-                <span>Fine particles</span>
+        <section class="metrics-section" id="air-quality">
+            <div class="section-heading"><div><p class="eyebrow">Air quality snapshot</p><h2>The details that matter.</h2></div><p>Pollutants are measured in real time at the selected location.</p></div>
+            <div class="metric-grid">
+                <article class="metric-card"><span class="metric-icon blue">⌁</span><p>Fine particles</p><h3 id="pm25">—</h3><small>PM2.5 · µg/m³</small><div class="meter"><i id="pm25Meter"></i></div></article>
+                <article class="metric-card"><span class="metric-icon violet">◌</span><p>Coarse particles</p><h3 id="pm10">—</h3><small>PM10 · µg/m³</small><div class="meter"><i id="pm10Meter"></i></div></article>
+                <article class="metric-card"><span class="metric-icon orange">≈</span><p>Ground-level ozone</p><h3 id="o3">—</h3><small>O₃ · µg/m³</small><div class="meter"><i id="o3Meter"></i></div></article>
+                <article class="metric-card"><span class="metric-icon pink">⊹</span><p>Nitrogen dioxide</p><h3 id="no2">—</h3><small>NO₂ · µg/m³</small><div class="meter"><i id="no2Meter"></i></div></article>
             </div>
+        </section>
 
-            <div class="kpi-card">
-                <h3>PM10</h3>
-                <p id="pm10">Loading...</p>
-                <span>Dust particles</span>
-            </div>
+        <section class="insight-layout">
+            <article class="chart-card glass-card"><div class="card-heading"><div><p class="eyebrow">At a glance</p><h2>Pollution profile</h2></div><span class="chart-key">Live reading</span></div><div class="chart-wrap"><canvas id="pollutantChart"></canvas></div></article>
+            <article class="map-card glass-card"><div class="card-heading"><div><p class="eyebrow">Your location</p><h2>Local view</h2></div></div><div id="map"></div></article>
+        </section>
 
-            <div class="kpi-card">
-                <h3>CO</h3>
-                <p id="co">Loading...</p>
-                <span>Carbon monoxide</span>
-            </div>
+        <section class="forecast-section" id="forecast">
+            <div class="section-heading"><div><p class="eyebrow">Complete weather forecast</p><h2>Your next seven days.</h2></div><p>Temperature, rainfall chance and weather conditions—made easy to scan.</p></div>
+            <div class="today-weather glass-card"><div><p>NOW IN <span id="weatherCity">—</span></p><h3><span id="temperature">—</span>°</h3><span id="weatherSummary">Live conditions</span></div><div class="weather-stat"><span>Wind</span><b id="windspeed">—</b></div><div class="weather-stat"><span>Visibility guide</span><b id="visibilityGuide">—</b></div><div class="weather-symbol" id="weatherSymbol">☀</div></div>
+            <div class="forecast-grid" id="forecastCards"><p class="empty-state">Forecast loading…</p></div>
+            <div class="hourly-panel glass-card"><div><p class="eyebrow">Next 12 hours</p><h3>Best time to be outside</h3><p id="outdoorRecommendation">Checking the clearest time window…</p></div><div class="hourly-outlook" id="hourlyOutlook"></div></div>
+        </section>
 
-            <div class="kpi-card">
-                <h3>Alerts</h3>
-                <p id="alertCount">Loading...</p>
-                <span>High pollution hours</span>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <div class="card">
-                <h2>🗺️ Location Map</h2>
-                <div id="map"></div>
-            </div>
-
-            <div class="card">
-                <h2>📊 PM2.5 Daily Trend</h2>
-                <canvas id="pm25Chart"></canvas>
-            </div>
-
-            <div class="card">
-                <h2>📊 PM10 Daily Trend</h2>
-                <canvas id="pm10Chart"></canvas>
-            </div>
-
-            <div class="card">
-                <h2>📊 CO Daily Trend</h2>
-                <canvas id="coChart"></canvas>
-            </div>
-
-            <div class="card">
-                <h2>📈 Daily Pollution Summary</h2>
-                <div id="daily-summary">Loading daily data...</div>
-            </div>
-
-        </div>
-
-        <div class="card">
-            <h2>🚨 High Pollution Alerts</h2>
-            <div id="alerts">Loading alerts...</div>
-        </div>
-
-        <footer>
-            <p>Powered by PostgreSQL | Flask | Chart.js</p>
-        </footer>
-
-        <script src="script.js"></script>
-
-    </body>
-
+        <section class="advice-section" id="advice">
+            <div class="advice-intro"><p class="eyebrow">Personalised guidance</p><h2>Simple choices for<br>healthier air days.</h2><p id="adviceSummary">We’ll tailor recommendations as live readings arrive.</p></div>
+            <div class="advice-cards" id="adviceCards"></div>
+        </section>
+    </main>
+    <footer><a class="brand" href="#top"><span class="brand-mark">V</span>Vayu<span>Guard</span></a><p>Live environment intelligence for more mindful days.</p><span>Data: Open-Meteo</span></footer>
+    <script src="script.js"></script>
+</body>
 </html>
