@@ -1,27 +1,22 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify
 from flask_cors import CORS
 import psycopg2
 import requests
-import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
-
-app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="")
+app = Flask(__name__)
 CORS(app)
 
 def get_connection():
     return psycopg2.connect(
-        host=os.environ["DB_HOST"],
-        database=os.environ["DB_NAME"],
-        user=os.environ["DB_USER"],
-        password=os.environ["DB_PASSWORD"],
-        port=os.environ.get("DB_PORT", "5432")
+        host="localhost",
+        database="vayuguard_db",
+        user="postgres",
+        password="zubair123"
     )
 
 @app.route("/")
 def home():
-    return send_from_directory(FRONTEND_DIR, "index.html")
+    return "VayuGuard API is running!"
 
 @app.route("/summary")
 def summary():
@@ -137,14 +132,12 @@ def live_data(city, country):
         f"https://api.open-meteo.com/v1/forecast"
         f"?latitude={latitude}&longitude={longitude}"
         f"&current_weather=true"
-        f"&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"
-        f"&timezone=auto"
     )
 
     air_url = (
         f"https://air-quality-api.open-meteo.com/v1/air-quality"
         f"?latitude={latitude}&longitude={longitude}"
-        f"&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,us_aqi"
+        f"&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone"
     )
 
     weather_data = requests.get(weather_url).json()
@@ -167,9 +160,6 @@ def live_data(city, country):
         "country": location["country"],
         "latitude": latitude,
         "longitude": longitude,
-        "elevation": location.get("elevation"),
-        "population": location.get("population"),
-        "timezone": weather_data.get("timezone", location.get("timezone")),
         "temperature": weather_data["current_weather"]["temperature"],
         "windspeed": weather_data["current_weather"]["windspeed"],
         "pm2_5": air_data["hourly"]["pm2_5"][latest_index],
@@ -178,15 +168,7 @@ def live_data(city, country):
         "no2": air_data["hourly"]["nitrogen_dioxide"][latest_index],
         "so2": air_data["hourly"]["sulphur_dioxide"][latest_index],
         "o3": air_data["hourly"]["ozone"][latest_index],
-        "aqi": air_data["hourly"]["us_aqi"][latest_index],
-        "time": air_data["hourly"]["time"][latest_index],
-        "forecast": {
-            "dates": weather_data["daily"]["time"],
-            "weather_codes": weather_data["daily"]["weather_code"],
-            "highs": weather_data["daily"]["temperature_2m_max"],
-            "lows": weather_data["daily"]["temperature_2m_min"],
-            "precipitation": weather_data["daily"]["precipitation_probability_max"]
-        }
+        "time": air_data["hourly"]["time"][latest_index]
     })
 
 @app.route("/debug-location/<city>")
@@ -202,4 +184,4 @@ def debug_location(city):
     return jsonify(geo_data)
 
 if __name__ == "__main__":
-    app.run(debug=os.environ.get("FLASK_DEBUG", "false").lower() == "true")
+    app.run(debug=True)
